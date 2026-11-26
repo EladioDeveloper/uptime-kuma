@@ -1,0 +1,94 @@
+# Auditoría DevSecOps (MCW-621) - línea base del proyecto upstream.
+# Corre OpenSSF Scorecard contra github.com/louislam/uptime-kuma (sin cambios del fork),
+# gitleaks sobre TODO el historial y todas las ramas, y zizmor sobre los workflows.
+# Versiones y SHA según VERSIONES.md del curso. Los binarios se verifican por SHA-256.
+name: auditoria-linea-base
+
+on:
+  push:
+    branches: [auditoria/linea-base]
+  workflow_dispatch:
+
+permissions: {}
+
+env:
+  SCORECARD_VERSION: "5.5.0"
+  SCORECARD_SHA256: "83b90a05c1540ef1390db1cd5711e5fd04be9c1d8537fb84d39d02092d6a8dff"
+  GITLEAKS_VERSION: "8.30.1"
+  GITLEAKS_SHA256: "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb"
+
+jobs:
+  scorecard:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - name: Instalar Scorecard (verificado)
+        run: |
+          curl -sSfL -o sc.tgz "https://github.com/ossf/scorecard/releases/download/v${SCORECARD_VERSION}/scorecard_${SCORECARD_VERSION}_linux_amd64.tar.gz"
+          echo "${SCORECARD_SHA256}  sc.tgz" | sha256sum -c -
+          tar -xzf sc.tgz scorecard && sudo install scorecard /usr/local/bin/scorecard
+          scorecard version
+      - name: Scorecard sobre el upstream
+        env:
+          GITHUB_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          scorecard --repo=github.com/louislam/uptime-kuma --show-details --format=json > scorecard.json
+          scorecard --repo=github.com/louislam/uptime-kuma --show-details > scorecard.txt
+          jq -r '"Score: \(.score)  commit: \(.repo.commit)  fecha: \(.date)"' scorecard.json | tee -a "$GITHUB_STEP_SUMMARY"
+          { echo '| Score | Check | Motivo |'; echo '|---|---|---|';
+            jq -r '.checks[] | "| \(.score) | \(.name) | \(.reason) |"' scorecard.json; } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: scorecard-upstream
+          path: scorecard.*
+
+  gitleaks-historial:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - name: Clonar el upstream con todas las ramas (mirror)
+        run: git clone --mirror --quiet https://github.com/louislam/uptime-kuma.git upstream.git
+      - name: Instalar gitleaks (verificado)
+        run: |
+          curl -sSfL -o gl.tgz "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          echo "${GITLEAKS_SHA256}  gl.tgz" | sha256sum -c -
+          tar -xzf gl.tgz gitleaks && sudo install gitleaks /usr/local/bin/gitleaks
+      - name: gitleaks git --log-opts="--all" (informativo)
+        run: |
+          cd upstream.git
+          set +e
+          gitleaks git --log-opts="--all" --redact --report-format json --report-path ../gitleaks-historial.json .
+          echo "gitleaks exit code: $? (1 = hay coincidencias; se clasifican en el reporte)" | tee -a "$GITHUB_STEP_SUMMARY"
+          cd ..
+          echo "Coincidencias: $(jq length gitleaks-historial.json)" >> "$GITHUB_STEP_SUMMARY"
+          jq -r 'group_by(.RuleID)[] | "- \(.[0].RuleID): \(length)"' gitleaks-historial.json >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: gitleaks-historial
+          path: gitleaks-historial.json
+
+  zizmor:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Clonar el upstream
+        run: git clone --depth 1 --quiet https://github.com/louislam/uptime-kuma.git upstream
+      - name: zizmor 1.30.1 (imagen oficial)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set +e
+          docker run --rm -e GH_TOKEN -v "$PWD/upstream:/repo:ro" ghcr.io/zizmorcore/zizmor:1.30.1 --format plain /repo | tee zizmor.txt
+          docker run --rm -e GH_TOKEN -v "$PWD/upstream:/repo:ro" ghcr.io/zizmorcore/zizmor:1.30.1 --persona auditor --format json /repo > zizmor-auditor.json
+          echo "zizmor: $(tail -n 1 zizmor.txt)" >> "$GITHUB_STEP_SUMMARY"
+          exit 0
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: zizmor-upstream
+          path: zizmor*
