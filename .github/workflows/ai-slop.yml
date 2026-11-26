@@ -1,6 +1,6 @@
 name: Mark as AI Slop
 
-on:
+on: # zizmor: ignore[dangerous-triggers] solo reacciona a etiquetas que ponen los mantenedores; no hace checkout ni ejecuta código del PR
   pull_request_target:
     types:
       - labeled

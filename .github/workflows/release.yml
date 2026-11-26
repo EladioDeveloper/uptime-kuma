@@ -22,9 +22,9 @@ on:
         type: boolean
         default: false
 
-permissions:
-  contents: write
-  pull-requests: write
+# Mínimo privilegio: nada por defecto; cada job declara lo que usa del GITHUB_TOKEN.
+# Las escrituras al repo, releases y wiki usan secrets.RELEASE_PAT, no el GITHUB_TOKEN.
+permissions: {}
 
 concurrency:
   group: release-${{ inputs.is_beta }}-${{ inputs.version }}
@@ -35,6 +35,9 @@ jobs:
   #    Re-runnable: reuses the existing open PR if there is one
   prepare:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write # prepare-release.mjs crea el PR con github.token
     timeout-minutes: 20
 
     steps:
@@ -85,6 +88,8 @@ jobs:
   merge-pr:
     needs: prepare
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     timeout-minutes: 10
 
     steps:
@@ -122,6 +127,8 @@ jobs:
   draft-release:
     needs: merge-pr
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     timeout-minutes: 30
 
     steps:
@@ -165,6 +172,8 @@ jobs:
   build-and-upload-assets:
     needs: [merge-pr, draft-release]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     timeout-minutes: 30
 
     steps:
@@ -212,6 +221,8 @@ jobs:
   docker-images:
     needs: [merge-pr, build-and-upload-assets]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     timeout-minutes: 120
 
     steps:
@@ -266,6 +277,8 @@ jobs:
   update-wiki:
     needs: docker-images
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     timeout-minutes: 10
 
     steps:
