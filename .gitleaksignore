@@ -1,0 +1,34 @@
+# Hallazgos de gitleaks 8.30.1 revisados uno por uno (auditoría DevSecOps MCW-621, 2026-11-26).
+# Todos son datos de prueba: contraseñas de tests, llaves autofirmadas de fixtures y ejemplos con placeholder.
+# Ninguno es una credencial real. Formato: commit:archivo:regla:línea. Un hallazgo nuevo hace fallar el CI.
+
+# private-key en test/backend-test/monitors/test-tcp.js (2026-09-16)
+e2a6dfed6d38bef9e8877b031d13ae2793c4e7ad:test/backend-test/monitors/test-tcp.js:private-key:25
+# generic-api-key en test/backend-test/notification-providers/test-trigv.js (2026-11-16)
+71af278aac747eca73ab1359f3ba84891daf1b7f:test/backend-test/notification-providers/test-trigv.js:generic-api-key:10
+# generic-api-key en test/backend-test/test-better-auth.ts (2026-09-12)
+51205d0253ccab9048cc674b82b20ea8e9366d5a:test/backend-test/test-better-auth.ts:generic-api-key:17
+# generic-api-key en test/backend-test/test-better-auth-cookie-secure.ts (2026-10-31)
+dc523943abad1378cf934618aba701fd49e1c2ba:test/backend-test/test-better-auth-cookie-secure.ts:generic-api-key:14
+# generic-api-key en test/backend-test/test-better-auth-offline.ts (2026-11-18)
+c504a6b400fb0f82a40aee41ddfcc6e170a5b76c:test/backend-test/test-better-auth-offline.ts:generic-api-key:14
+# generic-api-key en test/backend-test/test-better-auth-offline.ts (2026-11-18)
+c504a6b400fb0f82a40aee41ddfcc6e170a5b76c:test/backend-test/test-better-auth-offline.ts:generic-api-key:15
+# generic-api-key en test/backend-test/test-better-auth-xff-rate-limit.ts (2026-11-03)
+41194cb3d6e2bb8b9ae6c8a0fe59ce577c3f3928:test/backend-test/test-better-auth-xff-rate-limit.ts:generic-api-key:15
+# generic-api-key en test/backend-test/test-initial-admin.ts (2026-10-26)
+be2b4409657a2873b4b08946509dad7a1bf59588:test/backend-test/test-initial-admin.ts:generic-api-key:13
+# generic-api-key en test/backend-test/test-initial-admin-env.ts (2026-10-26)
+be2b4409657a2873b4b08946509dad7a1bf59588:test/backend-test/test-initial-admin-env.ts:generic-api-key:14
+# private-key en test/backend-test/test-monitor-beat.ts (2026-10-24)
+9ced9ccd0e11458b6ebdea3ff1a3a4fe8452da46:test/backend-test/test-monitor-beat.ts:private-key:33
+# generic-api-key en test/e2e/specs/disable-auth.spec.js (2026-11-23)
+0688392183bea8727f917345af253516554c667a:test/e2e/specs/disable-auth.spec.js:generic-api-key:5
+# generic-api-key en test/e2e/specs/disable-auth.spec.js (2026-11-23)
+d0976dc2b94611c43400ebd461ba34a5cad90016:test/e2e/specs/disable-auth.spec.js:generic-api-key:5
+# generic-api-key en test/e2e/specs/metrics.spec.js (2026-10-25)
+540f230384ae6e58ea5a976224bbbf70e30bc535:test/e2e/specs/metrics.spec.js:generic-api-key:6
+# private-key en test/manual-test-radius-tls/certs/redis.key (2025-11-15)
+dda1a3f4427aa3431e717f00ee189a4fe056a02b:test/manual-test-radius-tls/certs/redis.key:private-key:1
+# generic-api-key en test/test-dashboard-performance.mts (2026-11-11)
+864f517d78d4092c727357817c6db9a27e5b8c61:test/test-dashboard-performance.mts:generic-api-key:13
