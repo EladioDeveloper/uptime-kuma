@@ -14,9 +14,15 @@ permissions: {}
 
 jobs:
   check-duplicates:
+    # Solo en el repositorio original (los forks no tienen ATLASCLOUD_API_KEY) y el
+    # comando /check-dup solo para mantenedores: cualquier cuenta podía invocar el agente
+    # de IA con texto no confiable y consumir los créditos del proveedor.
     if: >-
+      github.repository == 'louislam/uptime-kuma' && (
       (github.event_name == 'issues' && github.event.action == 'opened') ||
-      (github.event_name == 'issue_comment' && github.event.issue.pull_request == null && contains(github.event.comment.body, '/check-dup'))
+      (github.event_name == 'issue_comment' && github.event.issue.pull_request == null &&
+       contains(github.event.comment.body, '/check-dup') &&
+       contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)))
     runs-on: ubuntu-latest
     permissions:
       contents: read

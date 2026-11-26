@@ -1,0 +1,22 @@
+# Archivos sensibles para la cadena de suministro: cualquier cambio requiere
+# la revisión de un responsable (la regla "require code owner review" del ruleset).
+# En el upstream el responsable sería @louislam; en este fork, su dueño.
+
+# Pipeline de CI/CD, acciones locales y configuración de bots
+/.github/                       @EladioDeveloper
+
+# Instrucciones para agentes de IA y modelos usados en CI
+/AGENTS.md                      @EladioDeveloper
+/CLAUDE.md                      @EladioDeveloper
+/.github/copilot-instructions.md @EladioDeveloper
+/.github/opencode-models.json   @EladioDeveloper
+
+# Política de seguridad y excepciones de escáneres
+/SECURITY.md                    @EladioDeveloper
+/.gitleaksignore                @EladioDeveloper
+
+# Dependencias, imágenes y scripts de release
+/package.json                   @EladioDeveloper
+/package-lock.json              @EladioDeveloper
+/docker/                        @EladioDeveloper
+/extra/release/                 @EladioDeveloper
