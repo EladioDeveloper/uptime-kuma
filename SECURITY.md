@@ -1,14 +1,24 @@
 # Security Policy
 
-> [!CAUTION]
-> Unfortunately, I DO NOT check Security Advisories anymore. Thanks to AI slop reports, they keep running over my GitHub Security Advisories.
-
 ## Reporting a Vulnerability
 
-1. Create a new security advisory in https://github.com/louislam/uptime-kuma/security/advisories/new.
-2. Talk to me as a human in https://github.com/louislam/uptime-kuma/issues, explain the type of security issue but don't reveal the details. LLM description will be banned and closed immediately.
+Private vulnerability reporting is the only channel: create a new security advisory in
+https://github.com/louislam/uptime-kuma/security/advisories/new and include a working PoC.
+Reports without a PoC, or with an LLM-written description, are closed without reply.
 
-PS: Do not use the public issue tracker or discuss it in public as it will cause more damage.
+Never open a public issue or discussion with the details of a vulnerability.
+
+## Response Timeline
+
+| Step                                 | Target                             |
+| ------------------------------------ | ---------------------------------- |
+| Triage of reports that include a PoC | 7 days                             |
+| Fix for critical/high severity       | 30 days                            |
+| Fix for medium/low severity          | 90 days                            |
+| Public advisory with a CVE ID        | When the fixed version is released |
+
+If a report with a PoC gets no answer within 14 days, you may mention the advisory ID (only the ID)
+in a new issue so a maintainer can find it.
 
 ## Will be Closed without explanation
 
